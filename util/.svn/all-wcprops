@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/infolab/svn/xdata/!svn/ver/378/trunk/code/Xdata/XData/util
+END
+GraderDatasource.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/infolab/svn/xdata/!svn/ver/339/trunk/code/Xdata/XData/util/GraderDatasource.java
+END
+JoinAndUniqueAttributes.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/infolab/svn/xdata/!svn/ver/117/trunk/code/Xdata/XData/util/JoinAndUniqueAttributes.java
+END
+Graph.java
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/infolab/svn/xdata/!svn/ver/80/trunk/code/Xdata/XData/util/Graph.java
+END
+TesterDatasource.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/infolab/svn/xdata/!svn/ver/339/trunk/code/Xdata/XData/util/TesterDatasource.java
+END
+TagDatasets.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/infolab/svn/xdata/!svn/ver/351/trunk/code/Xdata/XData/util/TagDatasets.java
+END
+MyConnection.java
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/infolab/svn/xdata/!svn/ver/331/trunk/code/Xdata/XData/util/MyConnection.java
+END
+TableMap.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/infolab/svn/xdata/!svn/ver/339/trunk/code/Xdata/XData/util/TableMap.java
+END
+Configuration.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/infolab/svn/xdata/!svn/ver/360/trunk/code/Xdata/XData/util/Configuration.java
+END
+JoinGraphNode.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/infolab/svn/xdata/!svn/ver/265/trunk/code/Xdata/XData/util/JoinGraphNode.java
+END
+TestThread.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/infolab/svn/xdata/!svn/ver/332/trunk/code/Xdata/XData/util/TestThread.java
+END
+ConfigurationInterface.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/infolab/svn/xdata/!svn/ver/361/trunk/code/Xdata/XData/util/ConfigurationInterface.java
+END
+DatasourceConnection.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/infolab/svn/xdata/!svn/ver/336/trunk/code/Xdata/XData/util/DatasourceConnection.java
+END
+Utilities.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/infolab/svn/xdata/!svn/ver/378/trunk/code/Xdata/XData/util/Utilities.java
+END
+XData.properties
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/infolab/svn/xdata/!svn/ver/361/trunk/code/Xdata/XData/util/XData.properties
+END

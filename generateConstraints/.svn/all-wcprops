@@ -1,0 +1,143 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/infolab/svn/xdata/!svn/ver/377/trunk/code/Xdata/XData/generateConstraints
+END
+GenerateConstraintsForPartialMultipleGroup.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/generateConstraints/GenerateConstraintsForPartialMultipleGroup.java
+END
+RelatedToEquivalenceClassMutations.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/generateConstraints/RelatedToEquivalenceClassMutations.java
+END
+GenerateConstraintsForPartialGroup_case2.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/generateConstraints/GenerateConstraintsForPartialGroup_case2.java
+END
+AddDataBaseConstraints.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/infolab/svn/xdata/!svn/ver/370/trunk/code/Xdata/XData/generateConstraints/AddDataBaseConstraints.java
+END
+GenerateConstraintsToKillDistinctMutations.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/generateConstraints/GenerateConstraintsToKillDistinctMutations.java
+END
+Constraints.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/infolab/svn/xdata/!svn/ver/267/trunk/code/Xdata/XData/generateConstraints/Constraints.java
+END
+GenerateCVCConstraintForNode.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/infolab/svn/xdata/!svn/ver/368/trunk/code/Xdata/XData/generateConstraints/GenerateCVCConstraintForNode.java
+END
+GetCVC3HeaderAndFooter.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/infolab/svn/xdata/!svn/ver/370/trunk/code/Xdata/XData/generateConstraints/GetCVC3HeaderAndFooter.java
+END
+UtilRelatedToConstraints.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/infolab/svn/xdata/!svn/ver/246/trunk/code/Xdata/XData/generateConstraints/UtilRelatedToConstraints.java
+END
+UtilsRelatedToNode.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/infolab/svn/xdata/!svn/ver/336/trunk/code/Xdata/XData/generateConstraints/UtilsRelatedToNode.java
+END
+GenerateConstraintsToKillAggregationMutations.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/infolab/svn/xdata/!svn/ver/370/trunk/code/Xdata/XData/generateConstraints/GenerateConstraintsToKillAggregationMutations.java
+END
+GenerateConstraintsToKillExtraGroupByMutations.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/generateConstraints/GenerateConstraintsToKillExtraGroupByMutations.java
+END
+GenerateUniqueKeyConstraints.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/generateConstraints/GenerateUniqueKeyConstraints.java
+END
+GenerateConstraintsForHavingClause.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/generateConstraints/GenerateConstraintsForHavingClause.java
+END
+GenerateJoinPredicateConstraints.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/generateConstraints/GenerateJoinPredicateConstraints.java
+END
+GenerateConstraintForUnintendedJoins.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/generateConstraints/GenerateConstraintForUnintendedJoins.java
+END
+GenerateCommonConstraintsForQuery.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/infolab/svn/xdata/!svn/ver/377/trunk/code/Xdata/XData/generateConstraints/GenerateCommonConstraintsForQuery.java
+END
+GenerateConstraintsRelatedToBranchQuery.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/generateConstraints/GenerateConstraintsRelatedToBranchQuery.java
+END
+GenerateGroupByConstraints.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/generateConstraints/GenerateGroupByConstraints.java
+END
+GenerateConstraintsForWhereClauseSubQueryBlock.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/generateConstraints/GenerateConstraintsForWhereClauseSubQueryBlock.java
+END
+CountMutations.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/generateConstraints/CountMutations.java
+END
+GenerateConstraintsForDisjunct.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/infolab/svn/xdata/!svn/ver/370/trunk/code/Xdata/XData/generateConstraints/GenerateConstraintsForDisjunct.java
+END
+GenerateConstraintsForConjunct.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/infolab/svn/xdata/!svn/ver/370/trunk/code/Xdata/XData/generateConstraints/GenerateConstraintsForConjunct.java
+END

@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/infolab/svn/xdata/!svn/ver/377/trunk/code/Xdata/XData/killMutations
+END
+Utils.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/infolab/svn/xdata/!svn/ver/370/trunk/code/Xdata/XData/killMutations/Utils.java
+END
+MutationsInOuterBlock.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/infolab/svn/xdata/!svn/ver/350/trunk/code/Xdata/XData/killMutations/MutationsInOuterBlock.java
+END
+MutationsInWhereSubQuery.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/infolab/svn/xdata/!svn/ver/368/trunk/code/Xdata/XData/killMutations/MutationsInWhereSubQuery.java
+END
+GenerateDataForOriginalQuery.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/GenerateDataForOriginalQuery.java
+END
+KillCountMutations.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/KillCountMutations.java
+END
+MutationsInFromSubQuery.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/MutationsInFromSubQuery.java
+END

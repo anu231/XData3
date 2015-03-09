@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/infolab/svn/xdata/!svn/ver/377/trunk/code/Xdata/XData/killMutations/outerQueryBlock
+END
+LikeMutationsInOuterQueryBlock.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/outerQueryBlock/LikeMutationsInOuterQueryBlock.java
+END
+NullMutationsInOuterBlock.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/outerQueryBlock/NullMutationsInOuterBlock.java
+END
+SelectionMutationsInOuterQueryBlock.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/outerQueryBlock/SelectionMutationsInOuterQueryBlock.java
+END
+ExtraGroupByMutationsInOuterQueryBlock.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/outerQueryBlock/ExtraGroupByMutationsInOuterQueryBlock.java
+END
+StringSelectionMutationsInOuterQueryBlock.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/outerQueryBlock/StringSelectionMutationsInOuterQueryBlock.java
+END
+AggMutationsInOuterQueryBlock.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/infolab/svn/xdata/!svn/ver/377/trunk/code/Xdata/XData/killMutations/outerQueryBlock/AggMutationsInOuterQueryBlock.java
+END
+EquivalenceMutationInOuterQueryBlock.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/outerQueryBlock/EquivalenceMutationInOuterQueryBlock.java
+END
+WhereClauseSubQueryConnectiveMutations.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/infolab/svn/xdata/!svn/ver/354/trunk/code/Xdata/XData/killMutations/outerQueryBlock/WhereClauseSubQueryConnectiveMutations.java
+END
+JoinMutationsInOuterQueryBlock.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/outerQueryBlock/JoinMutationsInOuterQueryBlock.java
+END
+PartialGroupByMutationsInOuterQueryBlock_case1.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/outerQueryBlock/PartialGroupByMutationsInOuterQueryBlock_case1.java
+END
+UnintendedJoinsMutationsInOuterQueryBlock.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/outerQueryBlock/UnintendedJoinsMutationsInOuterQueryBlock.java
+END
+ConstrainedAggregationMutationsInOuterQueryBlock.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/infolab/svn/xdata/!svn/ver/336/trunk/code/Xdata/XData/killMutations/outerQueryBlock/ConstrainedAggregationMutationsInOuterQueryBlock.java
+END
+DistinctMutationsInOuterQueryBlock.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/outerQueryBlock/DistinctMutationsInOuterQueryBlock.java
+END
+PartialGroupByMutationsInOuterQueryBlock_case2.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/outerQueryBlock/PartialGroupByMutationsInOuterQueryBlock_case2.java
+END

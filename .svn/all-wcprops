@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/infolab/svn/xdata/!svn/ver/378/trunk/code/Xdata/XData
+END
+.classpath
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/infolab/svn/xdata/!svn/ver/330/trunk/code/Xdata/XData/.classpath
+END
+.project
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/.project
+END
+log4j.properties
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/infolab/svn/xdata/!svn/ver/205/trunk/code/Xdata/XData/log4j.properties
+END

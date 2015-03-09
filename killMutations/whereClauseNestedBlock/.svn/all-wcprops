@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/infolab/svn/xdata/!svn/ver/377/trunk/code/Xdata/XData/killMutations/whereClauseNestedBlock
+END
+ExtraGroupByMutationsInWhereSubQuery.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/whereClauseNestedBlock/ExtraGroupByMutationsInWhereSubQuery.java
+END
+StringSelectionMutationsInWhereSubquery.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/whereClauseNestedBlock/StringSelectionMutationsInWhereSubquery.java
+END
+AggMutationsInWhereSubQuery.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/whereClauseNestedBlock/AggMutationsInWhereSubQuery.java
+END
+EquivalenceMutationInWhereSubQuery.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/whereClauseNestedBlock/EquivalenceMutationInWhereSubQuery.java
+END
+JoinMutationsInWhereSubQuery.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/infolab/svn/xdata/!svn/ver/377/trunk/code/Xdata/XData/killMutations/whereClauseNestedBlock/JoinMutationsInWhereSubQuery.java
+END
+PartialGroupByMutationsInWhereSubQuery_case1.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/whereClauseNestedBlock/PartialGroupByMutationsInWhereSubQuery_case1.java
+END
+UnintendedJoinsMutationsInWhereSubQuery.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/whereClauseNestedBlock/UnintendedJoinsMutationsInWhereSubQuery.java
+END
+ConstrainedAggregationMutationsInWhereSubQuery.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/whereClauseNestedBlock/ConstrainedAggregationMutationsInWhereSubQuery.java
+END
+DistinctMutationsInWhereSubQuery.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/whereClauseNestedBlock/DistinctMutationsInWhereSubQuery.java
+END
+PartialGroupByMutationsInWhereSubQuery_case2.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/whereClauseNestedBlock/PartialGroupByMutationsInWhereSubQuery_case2.java
+END
+LikeMutationsInWhereSubquery.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/whereClauseNestedBlock/LikeMutationsInWhereSubquery.java
+END
+MutationsInNotExistsSubquery.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/infolab/svn/xdata/!svn/ver/368/trunk/code/Xdata/XData/killMutations/whereClauseNestedBlock/MutationsInNotExistsSubquery.java
+END
+SelectionMutationsInWhereSubquery.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/killMutations/whereClauseNestedBlock/SelectionMutationsInWhereSubquery.java
+END

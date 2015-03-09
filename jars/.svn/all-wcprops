@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/infolab/svn/xdata/!svn/ver/333/trunk/code/Xdata/XData/jars
+END
+derby.jar
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/infolab/svn/xdata/!svn/ver/80/trunk/code/Xdata/XData/jars/derby.jar
+END
+pg74jdbc2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/infolab/svn/xdata/!svn/ver/80/trunk/code/Xdata/XData/jars/pg74jdbc2.jar
+END
+uncommons-maths-1.2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/infolab/svn/xdata/!svn/ver/80/trunk/code/Xdata/XData/jars/uncommons-maths-1.2.jar
+END
+automaton.jar
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/infolab/svn/xdata/!svn/ver/203/trunk/code/Xdata/XData/jars/automaton.jar
+END
+derby-10.8.jar
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/infolab/svn/xdata/!svn/ver/302/trunk/code/Xdata/XData/jars/derby-10.8.jar
+END
+junit.jar
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/infolab/svn/xdata/!svn/ver/205/trunk/code/Xdata/XData/jars/junit.jar
+END
+derby-26.jar
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/infolab/svn/xdata/!svn/ver/80/trunk/code/Xdata/XData/jars/derby-26.jar
+END
+google-collect-1.0-rc2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/infolab/svn/xdata/!svn/ver/203/trunk/code/Xdata/XData/jars/google-collect-1.0-rc2.jar
+END
+log4j.jar
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/infolab/svn/xdata/!svn/ver/205/trunk/code/Xdata/XData/jars/log4j.jar
+END
+tomcat-jdbc-7.0.54.jar
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/infolab/svn/xdata/!svn/ver/333/trunk/code/Xdata/XData/jars/tomcat-jdbc-7.0.54.jar
+END
+tomcat-juli-7.0.54.jar
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/infolab/svn/xdata/!svn/ver/333/trunk/code/Xdata/XData/jars/tomcat-juli-7.0.54.jar
+END
+postgresql-9.0-801.jdbc4.jar
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/infolab/svn/xdata/!svn/ver/80/trunk/code/Xdata/XData/jars/postgresql-9.0-801.jdbc4.jar
+END
