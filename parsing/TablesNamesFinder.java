@@ -50,6 +50,7 @@ public class TablesNamesFinder implements SelectVisitor, FromItemVisitor, Expres
 	private List<SelectItem> projectedCols;
 	public Node root=null;
 	private Node currentRoot=null;
+	private QueryParser rootQP = null;
 
 	public TablesNamesFinder(){
 		//currentRoot = new Node("root");
@@ -58,6 +59,12 @@ public class TablesNamesFinder implements SelectVisitor, FromItemVisitor, Expres
 	public Node getRootNode(){
 		return currentRoot;
 	}
+	
+	public void createTree(QueryParser qp, Select stmt){
+		rootQP = qp;
+		stmt.getSelectBody().accept(this);
+	}
+	
 	public List getTableList(Select select) {
 		tables = new ArrayList();
 		tableAlias = new ArrayList();
@@ -94,42 +101,62 @@ public class TablesNamesFinder implements SelectVisitor, FromItemVisitor, Expres
 	public List getTableAlias(Select select) {
 		return tableAlias;
 	}
+	
+	private String getJoinType(Join j){
+		if (j.isInner()){
+			return JoinClauseInfo.innerJoin;
+		} else if (j.isOuter()){
+			if (j.isLeft()){
+				return JoinClauseInfo.leftOuterJoin;
+			} else {
+				return JoinClauseInfo.rightOuterJoin;
+			}
+		}
+		return JoinClauseInfo.nonEquiJoinTpe;//FIXME unknown type what to do here
+	}
+	
 	public void visit(PlainSelect plainSelect) {
 		plainSelect.getFromItem().accept(this);
-		//////////////Creating Tree////////////////
 		
-		/*Node temp = new Node(plainSelect.toString());
-		if (currentRoot ==null){
-			root = temp;
-			currentRoot = temp;
-			temp.parent = null;
-		} else {
-			temp.parent = currentRoot;
-		}*/
-		//////////////////////////////////////////
 		where = plainSelect.getWhere();
+		//FIXME add this to where in query parser somewhere
+		
+		//adding the joins now
+		
 		projectedCols = plainSelect.getSelectItems();
 		fromList.add(plainSelect.getFromItem());
 		
 		//getting the 1st element in the join list
 		FromItem firstElem = plainSelect.getFromItem();
+		
 		Node leftfirstNode = new Node(firstElem.toString()); 
 		System.out.println("PlainSelect:"+plainSelect.getFromItem()+",,,"+plainSelect.getFromItem().getClass());
 		Node startRoot = currentRoot;
 		boolean start=true;
 		Node prevJoin = null;
+		
 		if (plainSelect.getJoins() != null) {
 			for (Iterator joinsIt = plainSelect.getJoins().iterator(); joinsIt.hasNext();) {
 				Join join = (Join) joinsIt.next();
-				//create a new node for this join
-				Node joinNode = new Node(join.toString());
+				//create a new Join Tree Node for this join
+				JoinTreeNode jtn = new JoinTreeNode();
+				String joinType = getJoinType(join);
+				//ascertain the join type of the node
+				jtn.setNodeType(joinType);
+				if (joinType.equalsIgnoreCase(JoinClauseInfo.innerJoin)) {
+					jtn.setInnerJoin(true);
+				} else{
+					jtn.setInnerJoin(false);
+				}
+				
 				if (start){
 					//the iteration has started and the 1st element of this join is already been extracted
 					start=false;
-					joinNode.setLeft(leftfirstNode);
-					prevJoin = joinNode;
-					leftfirstNode.parent = currentRoot;
+					//joinNode.setLeft(leftfirstNode);
+					//prevJoin = joinNode;
+					//leftfirstNode.parent = currentRoot;
 					currentRoot = leftfirstNode;
+					Expression exp = join.getOnExpression();
 					firstElem.accept(this);
 				} else {
 					joinNode.setLeft(prevJoin);

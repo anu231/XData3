@@ -25,13 +25,25 @@ import net.sf.jsqlparser.statement.select.SelectItem;
 
 import java.util.*;
 
+import util.TableMap;
+
 public class ParseSQL {
 
 	private static Query query;
 	private static CCJSqlParserManager pm;
 	private static Statement stmt;
 	private static TablesNamesFinder tnf;
-
+	private static QueryParser root;
+	/**
+	 * Description Constructs xdata based tree from JSQL
+	 * @param stmt
+	 */
+	private static void constructXDataTree(Select stmt){
+		root = new QueryParser(TableMap.getInstances());
+		//FIXME add the where clause
+		tnf = new TablesNamesFinder();
+		tnf.createTree(root,stmt);
+	}
 
 	private static void parseQuery(String q, String qid) throws JSQLParserException{
 		//int qid = 1;
@@ -42,9 +54,15 @@ public class ParseSQL {
 		if (stmt instanceof Select){
 			//get the from list without going into subquery
 			Select selectStatement = (Select) stmt;
+			
+			constructXDataTree(selectStatement);
+			
 			PlainSelect ps = (PlainSelect)selectStatement.getSelectBody();
 			tnf.makeLists(selectStatement);
-			ps.getJoins();
+			List<Join> jL = ps.getJoins();
+			for (int i=0; i<jL.size(); i++){
+				System.out.println("Join List:"+jL.get(i).toString());
+			}
 			List<FromItem> fromList = tnf.getFromList();
 			List<SelectItem> projCols = tnf.getProjectedList();
 			for (Iterator iter = fromList.iterator(); iter.hasNext();) {
@@ -105,8 +123,8 @@ public class ParseSQL {
 	public static void main(String[] args)throws JSQLParserException {
 		// TODO Auto-generated method stub
 		//String query = "Select id1 as id,4,count(distinct(a)),'asd' from moodle as m left outer join highland as h,jurassic as h where moodle.id between 2 and 3";
-		String query = "Select * from (select * from a left outer join b using (id)) x left outer join (select * from c left outer join d using (id)) y using (id)";
-		//String query = "select * from a,b,c";
+		//String query = "Select * from (select * from a left outer join b using (id)) x left outer join (select * from c left outer join d using (id)) y using (id)";
+		String query = "select * from a,b,c";
 		tnf = new TablesNamesFinder();
 		parseQuery(query,"1");
 		//CCJSqlParserManager pm = new CCJSqlParserManager(); 

@@ -6,10 +6,13 @@ import java.util.Vector;
 
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.AllColumns;
+import net.sf.jsqlparser.statement.select.FromItem;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectExpressionItem;
 import net.sf.jsqlparser.statement.select.SelectItem;
+import net.sf.jsqlparser.statement.select.SubSelect;
+import net.sf.jsqlparser.schema.Table;
 
 import org.apache.derby.iapi.error.StandardException;
 import org.apache.derby.iapi.types.TypeId;
@@ -47,8 +50,41 @@ public class ProcessResultSetNode {
 		TablesNamesFinder tnf = new TablesNamesFinder();
 		tnf.makeLists(selectStatement);
 
+		//going through the joins in the select statement
+		FromItem firstElem = ps.getFromItem();
+		
+		qParser.queryAliases = new FromListElement();
+		qParser.queryAliases.setAliasName("Q");
+		qParser.queryAliases.setTableName(null);
 
-
+		qParser.topLevelRelation = generateRelationHierarchy(rsNode);//FIXME adapt to jsql
+		
+		//JoinTree
+		qParser.root = new JoinTreeNode();
+		Vector<Node> JoinConditions = new Vector<Node>(); 
+		Vector<FromListElement> t = new Vector<FromListElement>();
+		//assuming that 1st Element can't be join node
+		if (firstElem instanceof net.sf.jsqlparser.schema.Table){
+			//its a table. call operate on base table
+			FromListElement temp = OperateOnBaseTable.OperateOnBaseTableJSQL((Table)firstElem,false, "", qParser.root,qParser, false, false);
+			t.add(temp);
+		} else if (firstElem instanceof SubSelect){
+			//its a subquery
+			FromListElement temp =	OperateOnSubQuery.OperateOnSubquery((FromSubquery) fromTableList.get(j),qParser.allConds, qParser.root,true,false,qParser);
+			t.add(temp);
+		}
+		List<net.sf.jsqlparser.statement.select.Join> joinList = ps.getJoins();
+		//as the jsql join doesn't provide the left element so storing the left item in a variable
+		FromItem leftElem = firstElem;
+		for (int i=0; i<joinList.size(); i++){
+			FromListElement temp = new FromListElement();
+			temp = OperateOnJoin.OperateOnJoinNodeJSQL(joinNode, "", JoinConditions, qParser.root, false, false, qParser);
+			t.add(temp);
+		}
+		qParser.queryAliases.setTabs(t);
+		
+		
+		
 	}
 	private void processProjectedCols(List<SelectItem> projCols, QueryParser qParser)throws Exception{
 		//Add projected columns
