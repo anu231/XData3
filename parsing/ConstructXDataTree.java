@@ -1,6 +1,8 @@
 package parsing;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import util.TableMap;
 import net.sf.jsqlparser.expression.AllComparisonExpression;
@@ -43,151 +45,75 @@ import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.select.*;
 
-public class TablesNamesFinder implements SelectVisitor, FromItemVisitor, ExpressionVisitor, ItemsListVisitor {
+public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinVisitor, ExpressionVisitor, ItemsListVisitor {
 	private List tables;
-	private List tableAlias;
-	private List<FromItem> fromList;
-	private Expression where;
-	private List<SelectItem> projectedCols;
-	//public Node root=null;
-	//private Node currentRoot=null;
-	private QueryParser rootQP = null;
-	private Object currentRoot=null;
-	private boolean add2Right = false;
-
-	public TablesNamesFinder(){
-		//currentRoot = new Node("root");
-		//root = currentRoot;
-	}
-	public Object getRootNode(){
-		return currentRoot;
-	}
+	private QueryParser qp;
+	private JoinTreeNode currentRoot;
+	private Node whereClause;
+	private boolean whereClauseParseStart = false;
 	
-	public void createTree(QueryParser qp, Select stmt){
-		rootQP = qp;
-		stmt.getSelectBody().accept(this);
+	public ConstructXDataTree(){
+		qp = new QueryParser(TableMap.getInstances());
 	}
 	
 	public List getTableList(Select select) {
 		tables = new ArrayList();
-		tableAlias = new ArrayList();
 		select.getSelectBody().accept(this);
 		return tables;
 	}
-	
-	public void makeLists(Select select){
-		fromList = new ArrayList();
-		projectedCols = new ArrayList<SelectItem>();
-		select.getSelectBody().accept(this);
-	}
-	
-	public void makeLists(){
-		fromList = new ArrayList();
-		projectedCols = new ArrayList<SelectItem>();
-	}
-	public List<SelectItem> getProjectedList(){
-		return projectedCols;
-	}
-	
-	public List<FromItem> getFromList(){
-		return fromList;
-	}
-	
-	public List getJoinList(Select select){
-		fromList = new ArrayList();
-		select.getSelectBody().accept(this);
-		return fromList;
-	}
-	public Expression getWhereClause(){
-		return where;
-	}
-	public List getTableAlias(Select select) {
-		return tableAlias;
-	}
-	
-	private String getJoinType(Join j){
-		if (j.isInner()){
-			return JoinClauseInfo.innerJoin;
-		} else if (j.isOuter()){
-			if (j.isLeft()){
-				return JoinClauseInfo.leftOuterJoin;
-			} else {
-				return JoinClauseInfo.rightOuterJoin;
+
+	public void visit(PlainSelect plainSelect) {
+		Boolean parseStart = false;//checks whether this is the base statement of the query
+		JoinTreeNode oldRoot = currentRoot;
+		if (qp.root==null){
+			parseStart = true;
+			qp.root = new JoinTreeNode();
+			currentRoot = qp.root;
+		} else {
+			currentRoot = new JoinTreeNode();
+			if (oldRoot.getLeft()==null){
+				oldRoot.setLeft(currentRoot);
+			} else if (oldRoot.getRight()==null){
+				oldRoot.setRight(currentRoot);
 			}
 		}
-		return JoinClauseInfo.nonEquiJoinTpe;//FIXME unknown type what to do here
-	}
-	
-	public void visit(PlainSelect plainSelect) {
+		
 		plainSelect.getFromItem().accept(this);
-		
-		//create a QueryParser Object here
-		QueryParser tempQp = new QueryParser(TableMap.getInstances());
-		
-		where = plainSelect.getWhere();
-		//visit the where clause
-		Object tempParent = currentRoot;
-		currentRoot = tempQp;
-		where.accept(this);
-		
-		//adding the joins now
-		
-		//getting the 1st element in the join list
-		FromItem firstElem = plainSelect.getFromItem();
-		
-		Node leftfirstNode = new Node(firstElem.toString()); 
-		System.out.println("PlainSelect:"+plainSelect.getFromItem()+",,,"+plainSelect.getFromItem().getClass());
-		Node startRoot = currentRoot;
-		boolean start=true;
-		Node prevJoin = null;
-		
+		JoinTreeNode firstElem = null;
+		if (currentRoot.getLeft()!=null){
+			firstElem = currentRoot.getLeft();
+		} else if (currentRoot.getRight()!=null){
+			firstElem = currentRoot.getRight();
+		}
+		Boolean firstJoin = true;
+		JoinTreeNode prevElem = null;
 		if (plainSelect.getJoins() != null) {
 			for (Iterator joinsIt = plainSelect.getJoins().iterator(); joinsIt.hasNext();) {
 				Join join = (Join) joinsIt.next();
-				//create a new Join Tree Node for this join
-				JoinTreeNode jtn = new JoinTreeNode();
-				String joinType = getJoinType(join);
-				//ascertain the join type of the node
-				jtn.setNodeType(joinType);
-				if (joinType.equalsIgnoreCase(JoinClauseInfo.innerJoin)) {
-					jtn.setInnerJoin(true);
-				} else{
-					jtn.setInnerJoin(false);
-				}
-				
-				if (start){
-					//the iteration has started and the 1st element of this join is already been extracted
-					start=false;
-					Object parentRoot = currentRoot;
-					add2Right = false;
-					Expression exp = join.getOnExpression();
-					currentRoot = jtn;
-					//FIXME add the on expression to jtn
-					firstElem.accept(this);
+				JoinTreeNode joinNode = new JoinTreeNode();
+				if (firstJoin){
+					//this is the first join
+					joinNode.setLeft(firstElem);
+					firstJoin = false;
 				} else {
-					//left of the current jtn will be 
-					joinNode.setLeft(prevJoin);
-					prevJoin = joinNode;
+					joinNode.setLeft(prevElem);
 				}
-				FromItem rightItem = join.getRightItem();
-				Node rightNode = new Node(rightItem.toString());
-				joinNode.setRight(rightNode);
-				//System.out.println("JOIN:"+join.toString());
-				//System.out.println("Join-right-item:"+join.getRightItem()+",,,"+join.getRightItem().getClass());
-				fromList.add(join.getRightItem());
-				//System.out.println("String:"+join.getRightItem().toString()+"::Class:"+join.getRightItem().getClass());
+				JoinTreeNode oldRoot2 = currentRoot;
+				currentRoot = joinNode;
 				join.getRightItem().accept(this);
+				currentRoot = oldRoot2;
 			}
-		} else {
-			//there is no join in this select statement
-			Node temp = new Node(plainSelect.toString());
-			temp.parent = currentRoot;
-			currentRoot.setLeft(temp);
 		}
-		if (plainSelect.getWhere() != null)
+		if (plainSelect.getWhere() != null){
+			//where clause processing
+			whereClauseParseStart = true;
 			plainSelect.getWhere().accept(this);
-		if (currentRoot.parent!=null){
-			currentRoot = currentRoot.parent;
+		}
+		
+		if (parseStart){
+			//do nothing
+		} else {
+			currentRoot = oldRoot;
 		}
 	}
 
@@ -200,29 +126,36 @@ public class TablesNamesFinder implements SelectVisitor, FromItemVisitor, Expres
 
 	public void visit(Table tableName) {
 		String tableWholeName = tableName.getWholeTableName();
-		//tables.add(tableWholeName);
-		//tableAlias.add(tableName.getAlias());
+		tables.add(tableWholeName);
+		JoinTreeNode jtn = new JoinTreeNode();
+		
+		jtn.setNodeType(JoinTreeNode.relation);
+		jtn.setLeft(null);
+		jtn.setRight(null);
+		jtn.setRelName(tableName.getName());
+		jtn.setOc(0);//setting output cardinality
+		jtn.setNodeAlias(tableName.getAlias());
+		
 	}
 
 	public void visit(SubSelect subSelect) {
-		Node temp = new Node(subSelect.toString());
-		temp.parent = currentRoot;
-		currentRoot.setLeft(temp);
-		currentRoot = temp;
-		System.out.println("SubSelect:"+subSelect.toString());		
-		subSelect.getSelectBody().accept(this);
-		if (currentRoot.parent!=null){
-			currentRoot= currentRoot.parent;
+		//subquery
+		JoinTreeNode jtn = new JoinTreeNode();
+		JoinTreeNode oldRoot = currentRoot;
+		if (currentRoot.getLeft()==null){
+			currentRoot.setLeft(jtn);
+		} else if (currentRoot.getRight()==null){
+			currentRoot.setRight(jtn);
+		} else {
+			//FIXME
+			//throw error
 		}
+		currentRoot = jtn;
+		jtn.setNodeAlias(subSelect.getAlias());
+		subSelect.getSelectBody().accept(this);
+		currentRoot = oldRoot;
 	}
-	
-	public void visit(Expression exp){
-		//where expression possibly 
-		//create a node for this where expression
-		Node expNode = new Node();
-		
-	}
-	
+
 	public void visit(Addition addition) {
 		visitBinaryExpression(addition);
 	}
@@ -326,7 +259,15 @@ public class TablesNamesFinder implements SelectVisitor, FromItemVisitor, Expres
 		binaryExpression.getLeftExpression().accept(this);
 		binaryExpression.getRightExpression().accept(this);
 	}
-
+	
+	public void visit(Expression exp){
+		if (whereClauseParseStart){
+			whereClauseParseStart = false;
+			//where clause parsing begins
+			//TODO parse where
+		}
+	}
+	
 	public void visit(ExpressionList expressionList) {
 		for (Iterator iter = expressionList.getExpressions().iterator(); iter.hasNext();) {
 			Expression expression = (Expression) iter.next();
@@ -359,7 +300,6 @@ public class TablesNamesFinder implements SelectVisitor, FromItemVisitor, Expres
 	}
 
 	public void visit(SubJoin subjoin) {
-		System.out.println("Subjoin:"+subjoin);
 		subjoin.getLeft().accept(this);
 		subjoin.getJoin().getRightItem().accept(this);
 	}
@@ -395,4 +335,3 @@ public class TablesNamesFinder implements SelectVisitor, FromItemVisitor, Expres
 	}
 
 }
-

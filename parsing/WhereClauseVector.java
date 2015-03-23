@@ -52,7 +52,7 @@ public class WhereClauseVector {
 	public static void getAggregationDataStructures(ResultSetNode rsNode,FromListElement queryAliases, Map<String,Table> fromTables,boolean fromSubquery,boolean whereSubquery, QueryParser qParser) throws Exception {
 
 		// Get group by columns
-		Vector< Node> tempGroupBy= new Vector< Node>();
+		Vector<Node> tempGroupBy= new Vector< Node>();
 		int queryType = 0;
 		if(fromSubquery) queryType = 1;
 		if(whereSubquery) queryType = 2;

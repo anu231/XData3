@@ -255,11 +255,11 @@ public class OperateOnSubQuery {
 					leftT.add(temp);
 				} else if (leftSqFromTableList.get(i) instanceof JoinNode) {
 					FromListElement temp = new FromListElement();
-					//	temp = OperateOnJoinNode((JoinNode) leftSqFromTableList.get(i),	subquery.getCorrelationName(), fromClause.allConds,jtn);
+					temp = OperateOnJoin.OperateOnJoinNode((JoinNode) leftSqFromTableList.get(i),	subquery.getCorrelationName(), fromClause.allConds,jtn);
 					leftT.add(temp);
 				} else if (leftSqFromTableList.get(i) instanceof FromSubquery) {
 					FromListElement temp = new FromListElement();
-					//	temp = OperateOnSubquery((FromSubquery) sqFromTableList.get(i),allConds,jtn);
+					temp = OperateOnSubquery((FromSubquery) sqFromTableList.get(i),allConds,jtn);
 
 					leftT.add(temp);
 				}
