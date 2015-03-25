@@ -39,10 +39,13 @@ public class ParseSQL {
 	 * @param stmt
 	 */
 	private static void constructXDataTree(Select stmt){
-		root = new QueryParser(TableMap.getInstances());
+		/*root = new QueryParser(TableMap.getInstances());
 		//FIXME add the where clause
 		tnf = new TablesNamesFinder();
-		tnf.createTree(root,stmt);
+		tnf.createTree(root,stmt);*/
+		
+		ConstructXDataTree cxt = new ConstructXDataTree();
+		cxt.parseTree(stmt);
 	}
 
 	private static void parseQuery(String q, String qid) throws JSQLParserException{
@@ -57,7 +60,7 @@ public class ParseSQL {
 			
 			constructXDataTree(selectStatement);
 			
-			PlainSelect ps = (PlainSelect)selectStatement.getSelectBody();
+			/*PlainSelect ps = (PlainSelect)selectStatement.getSelectBody();
 			tnf.makeLists(selectStatement);
 			List<Join> jL = ps.getJoins();
 			for (int i=0; i<jL.size(); i++){
@@ -96,7 +99,7 @@ public class ParseSQL {
 				//String fromItem = iter.next().toString();
 				//System.out.println(col.toString());
 			}
-			Node root = tnf.getRootNode();
+			Node root = null;//tnf.getRootNode();
 			while (root.left!=null){
 				System.out.println(root.getName());
 				root = root.getLeft();
@@ -124,7 +127,7 @@ public class ParseSQL {
 		// TODO Auto-generated method stub
 		//String query = "Select id1 as id,4,count(distinct(a)),'asd' from moodle as m left outer join highland as h,jurassic as h where moodle.id between 2 and 3";
 		//String query = "Select * from (select * from a left outer join b using (id)) x left outer join (select * from c left outer join d using (id)) y using (id)";
-		String query = "select * from a,b,c";
+		String query = "select * from a,b,c where a.id=b.id";
 		tnf = new TablesNamesFinder();
 		parseQuery(query,"1");
 		//CCJSqlParserManager pm = new CCJSqlParserManager(); 

@@ -51,9 +51,20 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	private JoinTreeNode currentRoot;
 	private Node whereClause;
 	private boolean whereClauseParseStart = false;
+	private boolean output = true;
+	
+	private void debug(String s){
+		if (output){
+			System.out.println(s);
+		}
+	}
 	
 	public ConstructXDataTree(){
 		qp = new QueryParser(TableMap.getInstances());
+	}
+	
+	public void parseTree(Select stmt){
+		stmt.getSelectBody().accept(this);
 	}
 	
 	public List getTableList(Select select) {
@@ -107,7 +118,10 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		if (plainSelect.getWhere() != null){
 			//where clause processing
 			whereClauseParseStart = true;
+			debug(plainSelect.getWhere().toString());
 			plainSelect.getWhere().accept(this);
+		} else {
+			debug("no where");
 		}
 		
 		if (parseStart){
@@ -126,7 +140,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 
 	public void visit(Table tableName) {
 		String tableWholeName = tableName.getWholeTableName();
-		tables.add(tableWholeName);
+		
 		JoinTreeNode jtn = new JoinTreeNode();
 		
 		jtn.setNodeType(JoinTreeNode.relation);
@@ -261,6 +275,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	}
 	
 	public void visit(Expression exp){
+		System.out.print("Expression:"+exp.toString());
 		if (whereClauseParseStart){
 			whereClauseParseStart = false;
 			//where clause parsing begins
