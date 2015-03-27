@@ -52,6 +52,8 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	private Node whereClause;
 	private boolean whereClauseParseStart = false;
 	private boolean output = true;
+	private Node currentNode;
+	private boolean nextNodeLeft = true;
 	
 	private void debug(String s){
 		if (output){
@@ -60,7 +62,8 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	}
 	
 	public ConstructXDataTree(){
-		qp = new QueryParser(TableMap.getInstances());
+		//FIXME : qp = new QueryParser(TableMap.getInstances()); it takes a lot of time so initiating with null value
+		qp = new QueryParser(null);
 	}
 	
 	public void parseTree(Select stmt){
@@ -118,7 +121,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		if (plainSelect.getWhere() != null){
 			//where clause processing
 			whereClauseParseStart = true;
-			debug(plainSelect.getWhere().toString());
+			debug("where clause :"+plainSelect.getWhere().toString());
 			plainSelect.getWhere().accept(this);
 		} else {
 			debug("no where");
@@ -138,18 +141,15 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		}
 	}
 
-	public void visit(Table tableName) {
-		String tableWholeName = tableName.getWholeTableName();
-		
-		JoinTreeNode jtn = new JoinTreeNode();
-		
+	public void visit(Table tableName) {		
+		JoinTreeNode jtn = new JoinTreeNode();	
 		jtn.setNodeType(JoinTreeNode.relation);
 		jtn.setLeft(null);
 		jtn.setRight(null);
 		jtn.setRelName(tableName.getName());
 		jtn.setOc(0);//setting output cardinality
 		jtn.setNodeAlias(tableName.getAlias());
-		
+		//FIXME where to add this jtn to
 	}
 
 	public void visit(SubSelect subSelect) {
@@ -171,11 +171,44 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	}
 
 	public void visit(Addition addition) {
+		//create an addition node
+		Node tempNode = new Node();
+		tempNode.setType(Node.getBaoNodeType());
+		tempNode.setOperator("+");
+		Node oldNode = currentNode;
+		currentNode = tempNode;
 		visitBinaryExpression(addition);
+		currentNode = oldNode;
 	}
-
+	/*
+	 * Description adds the provided noed to the current node at right place i.e. left or right. 
+	 * If currenntNode is not created. It creates it
+	 */
+	private void addOnCurrentNode(Node n){
+		if (currentNode==null){
+			currentNode = n;
+		} else {
+			if (nextNodeLeft && currentNode.getLeft()==null){
+				currentNode.setLeft(n);
+			} else if (!nextNodeLeft && currentNode.getRight()==null){
+				currentNode.setRight(n);
+			}  
+			else {
+				debug("error on child insertion");
+			}
+		}
+	}
+	
 	public void visit(AndExpression andExpression) {
+		//create an addition node
+		Node tempNode = new Node();
+		tempNode.setType(Node.getAndNodeType());
+		tempNode.setOperator("AND");
+		addOnCurrentNode(tempNode);
+		Node oldNode = currentNode;
+		currentNode = tempNode;
 		visitBinaryExpression(andExpression);
+		currentNode = oldNode;
 	}
 
 	public void visit(Between between) {
@@ -185,28 +218,66 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	}
 
 	public void visit(Column tableColumn) {
+		Node tempNode = new Node();
+		tempNode.setType(Node.getColRefType());
+		tempNode.setColumn(new parsing.Column(tableColumn.getColumnName(),tableColumn.getTable().getName()));
+		tempNode.setRight(null);
+		tempNode.setLeft(null);
+		addOnCurrentNode(tempNode);
 	}
 
 	public void visit(Division division) {
+		//create a division node
+		Node tempNode = new Node();
+		tempNode.setType(Node.getBaoNodeType());
+		tempNode.setOperator("/");
+		addOnCurrentNode(tempNode);
+		Node oldNode = currentNode;
+		currentNode = tempNode;
 		visitBinaryExpression(division);
+		currentNode = oldNode;
 	}
 
 	public void visit(DoubleValue doubleValue) {
 	}
 
 	public void visit(EqualsTo equalsTo) {
+		//create a equalsTo node
+		Node tempNode = new Node();
+		tempNode.setType(Node.getBroNodeType());
+		tempNode.setOperator("=");
+		addOnCurrentNode(tempNode);
+		Node oldNode = currentNode;
+		currentNode = tempNode;
 		visitBinaryExpression(equalsTo);
+		currentNode = oldNode;
 	}
 
 	public void visit(Function function) {
 	}
 
 	public void visit(GreaterThan greaterThan) {
+		//create a greaterThan node
+		Node tempNode = new Node();
+		tempNode.setType(Node.getBroNodeType());
+		tempNode.setOperator(">");
+		addOnCurrentNode(tempNode);
+		Node oldNode = currentNode;
+		currentNode = tempNode;
 		visitBinaryExpression(greaterThan);
+		currentNode = oldNode;
 	}
 
 	public void visit(GreaterThanEquals greaterThanEquals) {
+		//create a greaterThanEquals node
+		Node tempNode = new Node();
+		tempNode.setType(Node.getBroNodeType());
+		tempNode.setOperator(">=");
+		addOnCurrentNode(tempNode);
+		Node oldNode = currentNode;
+		currentNode = tempNode;
 		visitBinaryExpression(greaterThanEquals);
+		currentNode = oldNode;
 	}
 
 	public void visit(InExpression inExpression) {
@@ -233,29 +304,70 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	}
 
 	public void visit(LongValue longValue) {
+		debug("long val:"+longValue.toString());
 	}
 
 	public void visit(MinorThan minorThan) {
+		//create a minorThan node
+		Node tempNode = new Node();
+		tempNode.setType(Node.getBroNodeType());
+		tempNode.setOperator("<");
+		addOnCurrentNode(tempNode);
+		Node oldNode = currentNode;
+		currentNode = tempNode;
 		visitBinaryExpression(minorThan);
+		currentNode = oldNode;
 	}
 
 	public void visit(MinorThanEquals minorThanEquals) {
+		//create a minorThanEquals node
+		Node tempNode = new Node();
+		tempNode.setType(Node.getBroNodeType());
+		tempNode.setOperator("<=");
+		addOnCurrentNode(tempNode);
+		Node oldNode = currentNode;
+		currentNode = tempNode;
 		visitBinaryExpression(minorThanEquals);
+		currentNode = oldNode;
 	}
 
 	public void visit(Multiplication multiplication) {
+		//create an multiplication node
+		Node tempNode = new Node();
+		tempNode.setType(Node.getBaoNodeType());
+		tempNode.setOperator("*");
+		addOnCurrentNode(tempNode);
+		Node oldNode = currentNode;
+		currentNode = tempNode;
 		visitBinaryExpression(multiplication);
+		currentNode = oldNode;
 	}
 
 	public void visit(NotEqualsTo notEqualsTo) {
+		//create a notEqualsTo node
+		Node tempNode = new Node();
+		tempNode.setType(Node.getBroNodeType());
+		tempNode.setOperator("/=");
+		addOnCurrentNode(tempNode);
+		Node oldNode = currentNode;
+		currentNode = tempNode;
 		visitBinaryExpression(notEqualsTo);
+		currentNode = oldNode;
 	}
 
 	public void visit(NullValue nullValue) {
 	}
 
 	public void visit(OrExpression orExpression) {
+		//create a notEqualsTo node
+		Node tempNode = new Node();
+		tempNode.setType(Node.getOrNodeType());
+		tempNode.setOperator("OR");
+		addOnCurrentNode(tempNode);
+		Node oldNode = currentNode;
+		currentNode = tempNode;
 		visitBinaryExpression(orExpression);
+		currentNode = oldNode;
 	}
 
 	public void visit(Parenthesis parenthesis) {
@@ -266,21 +378,22 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	}
 
 	public void visit(Subtraction subtraction) {
+		//create an subtraction node
+		Node tempNode = new Node();
+		tempNode.setType(Node.getBaoNodeType());
+		tempNode.setOperator("-");
+		addOnCurrentNode(tempNode);
+		Node oldNode = currentNode;
+		currentNode = tempNode;
 		visitBinaryExpression(subtraction);
+		currentNode = oldNode;
 	}
 
 	public void visitBinaryExpression(BinaryExpression binaryExpression) {
+		nextNodeLeft = true;
 		binaryExpression.getLeftExpression().accept(this);
+		nextNodeLeft = false;
 		binaryExpression.getRightExpression().accept(this);
-	}
-	
-	public void visit(Expression exp){
-		System.out.print("Expression:"+exp.toString());
-		if (whereClauseParseStart){
-			whereClauseParseStart = false;
-			//where clause parsing begins
-			//TODO parse where
-		}
 	}
 	
 	public void visit(ExpressionList expressionList) {
@@ -288,7 +401,6 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 			Expression expression = (Expression) iter.next();
 			expression.accept(this);
 		}
-
 	}
 
 	public void visit(DateValue dateValue) {
