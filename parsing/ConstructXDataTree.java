@@ -75,7 +75,13 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		select.getSelectBody().accept(this);
 		return tables;
 	}
-
+	/*
+	 * Description Initiates the where clause tree
+	 */
+	private void initWhere(){
+		
+	}
+	
 	public void visit(PlainSelect plainSelect) {
 		Boolean parseStart = false;//checks whether this is the base statement of the query
 		JoinTreeNode oldRoot = currentRoot;
@@ -122,6 +128,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 			//where clause processing
 			whereClauseParseStart = true;
 			debug("where clause :"+plainSelect.getWhere().toString());
+			debug("where class:"+plainSelect.getWhere().getClass());
 			plainSelect.getWhere().accept(this);
 		} else {
 			debug("no where");
@@ -181,7 +188,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		currentNode = oldNode;
 	}
 	/*
-	 * Description adds the provided noed to the current node at right place i.e. left or right. 
+	 * Description adds the provided node to the current node at right place i.e. left or right. 
 	 * If currenntNode is not created. It creates it
 	 */
 	private void addOnCurrentNode(Node n){
@@ -200,11 +207,20 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	}
 	
 	public void visit(AndExpression andExpression) {
-		//create an addition node
+		//create an and node
 		Node tempNode = new Node();
+		if (whereClauseParseStart){
+			whereClauseParseStart = false;
+			whereClause = tempNode;
+			currentNode = whereClause;
+			//need to add the where clause to the ??? who will be the parent of where clause
+		} else {
+			//where clause has already started so the current node will be populated
+			addOnCurrentNode(tempNode);
+			
+		}
 		tempNode.setType(Node.getAndNodeType());
 		tempNode.setOperator("AND");
-		addOnCurrentNode(tempNode);
 		Node oldNode = currentNode;
 		currentNode = tempNode;
 		visitBinaryExpression(andExpression);
