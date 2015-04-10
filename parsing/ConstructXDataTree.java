@@ -54,6 +54,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	private boolean output = true;
 	private Node currentNode;
 	private boolean nextNodeLeft = true;
+	private boolean joinWhere = false;
 	
 	private void debug(String s){
 		if (output){
@@ -69,7 +70,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	public void parseTree(Select stmt){
 		stmt.getSelectBody().accept(this);
 	}
-	
+	pub
 	public List getTableList(Select select) {
 		tables = new ArrayList();
 		select.getSelectBody().accept(this);
@@ -118,8 +119,28 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 				} else {
 					joinNode.setLeft(prevElem);
 				}
+				
 				JoinTreeNode oldRoot2 = currentRoot;
 				currentRoot = joinNode;
+				
+				try {
+					//getting the ON Expression
+					//creating a where node out of the OnExpression
+					debug("using columns :"+join.getOnExpression());
+					whereClauseParseStart = true;
+					joinWhere = true;
+					join.getOnExpression().accept(this);
+					addWhereClause();
+				} catch(Exception e){
+					debug("Exception :"+e.toString());
+				}
+				try {
+					debug("using columns :"+join.getUsingColumns().toString());
+				} catch(Exception e){
+					debug("Exception :"+e.toString());
+				}
+				
+				
 				join.getRightItem().accept(this);
 				currentRoot = oldRoot2;
 			}
@@ -130,6 +151,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 			debug("where clause :"+plainSelect.getWhere().toString());
 			debug("where class:"+plainSelect.getWhere().getClass());
 			plainSelect.getWhere().accept(this);
+			addWhereClause();
 		} else {
 			debug("no where");
 		}
@@ -205,6 +227,26 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 			}
 		}
 	}
+	/*
+	 * Description - adds the where clause node to the query parser
+	 */
+	private void addWhereClause(){
+		//adding only the where clause
+		if (joinWhere) {
+			//this where clause belongs to the join node
+			//add it to current jtn
+			currentRoot.addJoinPred(whereClause);
+			joinWhere = false;
+		} else {
+			qp.allConds.add(whereClause);
+		}
+	}
+	/*
+	 * Description adds the where clause to the current JTN
+	 */
+	private void addWhereClause2JTN(){
+		
+	}
 	
 	public void visit(AndExpression andExpression) {
 		//create an and node
@@ -213,7 +255,8 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 			whereClauseParseStart = false;
 			whereClause = tempNode;
 			currentNode = whereClause;
-			//need to add the where clause to the ??? who will be the parent of where clause
+			//need to add the where clause to the tree who will be the parent of where clause
+			//the where clause will be added to the queryparser
 		} else {
 			//where clause has already started so the current node will be populated
 			addOnCurrentNode(tempNode);
@@ -260,6 +303,17 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	public void visit(EqualsTo equalsTo) {
 		//create a equalsTo node
 		Node tempNode = new Node();
+		if (whereClauseParseStart){
+			whereClauseParseStart = false;
+			whereClause = tempNode;
+			currentNode = whereClause;
+			//need to add the where clause to the tree who will be the parent of where clause
+			//the where clause will be added to the queryparser
+		} else {
+			//where clause has already started so the current node will be populated
+			addOnCurrentNode(tempNode);
+			
+		}
 		tempNode.setType(Node.getBroNodeType());
 		tempNode.setOperator("=");
 		addOnCurrentNode(tempNode);
@@ -275,6 +329,17 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	public void visit(GreaterThan greaterThan) {
 		//create a greaterThan node
 		Node tempNode = new Node();
+		if (whereClauseParseStart){
+			whereClauseParseStart = false;
+			whereClause = tempNode;
+			currentNode = whereClause;
+			//need to add the where clause to the tree who will be the parent of where clause
+			//the where clause will be added to the queryparser
+		} else {
+			//where clause has already started so the current node will be populated
+			addOnCurrentNode(tempNode);
+			
+		}
 		tempNode.setType(Node.getBroNodeType());
 		tempNode.setOperator(">");
 		addOnCurrentNode(tempNode);
@@ -287,6 +352,16 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	public void visit(GreaterThanEquals greaterThanEquals) {
 		//create a greaterThanEquals node
 		Node tempNode = new Node();
+		if (whereClauseParseStart){
+			whereClauseParseStart = false;
+			whereClause = tempNode;
+			currentNode = whereClause;
+			//need to add the where clause to the tree who will be the parent of where clause
+			//the where clause will be added to the queryparser
+		} else {
+			//where clause has already started so the current node will be populated
+			addOnCurrentNode(tempNode);
+		}
 		tempNode.setType(Node.getBroNodeType());
 		tempNode.setOperator(">=");
 		addOnCurrentNode(tempNode);
@@ -326,6 +401,17 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	public void visit(MinorThan minorThan) {
 		//create a minorThan node
 		Node tempNode = new Node();
+		if (whereClauseParseStart){
+			whereClauseParseStart = false;
+			whereClause = tempNode;
+			currentNode = whereClause;
+			//need to add the where clause to the tree who will be the parent of where clause
+			//the where clause will be added to the queryparser
+		} else {
+			//where clause has already started so the current node will be populated
+			addOnCurrentNode(tempNode);
+			
+		}
 		tempNode.setType(Node.getBroNodeType());
 		tempNode.setOperator("<");
 		addOnCurrentNode(tempNode);
@@ -338,6 +424,17 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	public void visit(MinorThanEquals minorThanEquals) {
 		//create a minorThanEquals node
 		Node tempNode = new Node();
+		if (whereClauseParseStart){
+			whereClauseParseStart = false;
+			whereClause = tempNode;
+			currentNode = whereClause;
+			//need to add the where clause to the tree who will be the parent of where clause
+			//the where clause will be added to the queryparser
+		} else {
+			//where clause has already started so the current node will be populated
+			addOnCurrentNode(tempNode);
+			
+		}
 		tempNode.setType(Node.getBroNodeType());
 		tempNode.setOperator("<=");
 		addOnCurrentNode(tempNode);
@@ -362,6 +459,17 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	public void visit(NotEqualsTo notEqualsTo) {
 		//create a notEqualsTo node
 		Node tempNode = new Node();
+		if (whereClauseParseStart){
+			whereClauseParseStart = false;
+			whereClause = tempNode;
+			currentNode = whereClause;
+			//need to add the where clause to the tree who will be the parent of where clause
+			//the where clause will be added to the queryparser
+		} else {
+			//where clause has already started so the current node will be populated
+			addOnCurrentNode(tempNode);
+			
+		}
 		tempNode.setType(Node.getBroNodeType());
 		tempNode.setOperator("/=");
 		addOnCurrentNode(tempNode);
@@ -375,8 +483,19 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	}
 
 	public void visit(OrExpression orExpression) {
-		//create a notEqualsTo node
+		//create a OR node
 		Node tempNode = new Node();
+		if (whereClauseParseStart){
+			whereClauseParseStart = false;
+			whereClause = tempNode;
+			currentNode = whereClause;
+			//need to add the where clause to the tree who will be the parent of where clause
+			//the where clause will be added to the queryparser
+		} else {
+			//where clause has already started so the current node will be populated
+			addOnCurrentNode(tempNode);
+			
+		}
 		tempNode.setType(Node.getOrNodeType());
 		tempNode.setOperator("OR");
 		addOnCurrentNode(tempNode);

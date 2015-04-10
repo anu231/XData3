@@ -76,6 +76,8 @@ public class JoinTreeNode {
 			onNode=(BinaryRelationalOperatorNode) preds;
 	}
 	
+	//public void setOnNodeJSQL()
+	
 	public boolean isInnerJoin() {
 		return isInnerJoin;
 	}
