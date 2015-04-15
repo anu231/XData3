@@ -46,6 +46,7 @@ public class ParseSQL {
 		
 		ConstructXDataTree cxt = new ConstructXDataTree();
 		cxt.parseTree(stmt);
+		cxt.displayTree();
 	}
 
 	private static void parseQuery(String q, String qid) throws JSQLParserException{
@@ -127,9 +128,12 @@ public class ParseSQL {
 		// TODO Auto-generated method stub
 		//String query = "Select id1 as id,4,count(distinct(a)),'asd' from moodle as m left outer join highland as h,jurassic as h where moodle.id between 2 and 3";
 		//String query = "Select * from (select * from a left outer join b using (id)) x left outer join (select * from c left outer join d using (id)) y using (id)";
-		String query = "select * from a join b on a.id=b.id";
-		tnf = new TablesNamesFinder();
+		String query = "Select * from (select * from a left outer join b on a.id=b.id) x left outer join (select * from c left outer join d on c.id=d.id) y on x.id=y.id";
+		//String query ="SELECT distinct dept_name FROM course WHERE credits IN (SELECT SUM(credits) FROM course NATURAL JOIN department WHERE  title='CS' GROUP BY dept_name, building HAVING COUNT(course_id)> 2)";
+		//String query = "select * from a join b on a.id=b.id";
+		//tnf = new TablesNamesFinder();
 		parseQuery(query,"1");
+		
 		//CCJSqlParserManager pm = new CCJSqlParserManager(); 
 		//Statement stmt = pm.parse(new StringReader(query));
 		/*if (stmt instanceof Select) {

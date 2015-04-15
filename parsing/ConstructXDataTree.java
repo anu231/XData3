@@ -79,6 +79,21 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		//debug("where clause :");
 	}
 	/*
+	 * description displays the node recursively
+	 */
+	private void recursiveDispNode(Node n,int depth){
+		if (n.getLeft()!=null){
+			recursiveDispNode(n.getLeft(), depth+1);
+		}
+		debug(insertSpace(depth)+n.getNodeType()+" ");
+		if (n.getNodeType().contains(Node.getColRefType())) {
+			debug(insertSpace(depth)+n.getTable().getTableName()+"."+n.getColumn().getColumnName());
+		}
+		if (n.getRight()!=null){
+			recursiveDispNode(n.getRight(), depth+1);
+		}
+	}
+	/*
 	 * Description recursively displays the jtn
 	 */
 	private void recursiveDispJTN(JoinTreeNode j, int depth){
@@ -88,7 +103,13 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		if (j.getLeft()!=null){
 			recursiveDispJTN(j.getLeft(), depth+1);
 		} 
-		debug(insertSpace(depth)+"Join Node On Exp :"+j.getJoinPred().toString());
+		debug(insertSpace(depth)+"JTN TYpe :"+j.getNodeType());
+		if (j.getJoinPred()!=null){
+			//debug(insertSpace(depth)+"Join Node On Exp :"+j.getJoinPred().toString());
+			for (int i=0; i<j.getJoinPred().size(); i++){
+				recursiveDispNode(j.getJoinPred().elementAt(i), depth+1);
+			}
+		}
 		if (j.getRight()!=null){
 			recursiveDispJTN(j.getRight(), depth+1);
 		}
@@ -130,30 +151,30 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 			}
 		}
 		
-		plainSelect.getFromItem().accept(this);
-		JoinTreeNode firstElem = null;
-		if (currentRoot.getLeft()!=null){
-			firstElem = currentRoot.getLeft();
-		} else if (currentRoot.getRight()!=null){
-			firstElem = currentRoot.getRight();
-		}
 		Boolean firstJoin = true;
 		JoinTreeNode prevElem = null;
 		if (plainSelect.getJoins() != null) {
 			for (Iterator joinsIt = plainSelect.getJoins().iterator(); joinsIt.hasNext();) {
 				Join join = (Join) joinsIt.next();
-				JoinTreeNode joinNode = new JoinTreeNode();
+				JoinTreeNode joinNode=null;
+				
 				if (firstJoin){
 					//this is the first join
-					joinNode.setLeft(firstElem);
+					//make this the base root
+					//this will be the base JTN for this query
+					joinNode = currentRoot;
+					plainSelect.getFromItem().accept(this);
 					firstJoin = false;
 				} else {
-					joinNode.setLeft(prevElem);
+					joinNode = new JoinTreeNode();
+					//joinNode.setLeft(prevElem);
+					//prev JTN will be the parent of this JTN
+					addOnCurrentJTN(joinNode);
 				}
-				
+				//now this joinNode will become the current root
 				JoinTreeNode oldRoot2 = currentRoot;
 				currentRoot = joinNode;
-				
+				joinNode.setNodeType(getJoinType(join));
 				try {
 					//getting the ON Expression
 					//creating a where node out of the OnExpression
@@ -163,15 +184,13 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 					join.getOnExpression().accept(this);
 					addWhereClause();
 				} catch(Exception e){
-					debug("Exception :"+e.toString());
+					debug("Exception1 :"+e.toString());
 				}
 				try {
 					debug("using columns :"+join.getUsingColumns().toString());
 				} catch(Exception e){
-					debug("Exception :"+e.toString());
+					debug("Exception2 :"+e.toString());
 				}
-				
-				
 				join.getRightItem().accept(this);
 				currentRoot = oldRoot2;
 			}
@@ -194,6 +213,20 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		}
 	}
 
+	private String getJoinType(Join j){
+		if (j.isFull()){
+			return JoinClauseInfo.fullOuterJoin;
+		} else if (j.isInner()){
+			return JoinClauseInfo.innerJoin;
+		} else if (j.isLeft()){
+			return JoinClauseInfo.leftOuterJoin;
+		} else if (j.isRight()){
+			return JoinClauseInfo.rightOuterJoin;
+		} else {
+			return "Unknown Join";
+		}
+	}
+	
 	public void visit(Union union) {
 		for (Iterator iter = union.getPlainSelects().iterator(); iter.hasNext();) {
 			PlainSelect plainSelect = (PlainSelect) iter.next();
@@ -209,7 +242,9 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		jtn.setRelName(tableName.getName());
 		jtn.setOc(0);//setting output cardinality
 		jtn.setNodeAlias(tableName.getAlias());
+		
 		//FIXME where to add this jtn to
+		addOnCurrentJTN(jtn);
 	}
 
 	public void visit(SubSelect subSelect) {
@@ -239,6 +274,15 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		currentNode = tempNode;
 		visitBinaryExpression(addition);
 		currentNode = oldNode;
+	}
+	private void addOnCurrentJTN(JoinTreeNode j){
+		if (currentRoot.getLeft()==null){
+			currentRoot.setLeft(j);
+		} else if (currentRoot.getRight()==null){
+			currentRoot.setRight(j);
+		} else {
+			debug("ERROR in jtn insertion. No space on left/right");
+		}
 	}
 	/*
 	 * Description adds the provided node to the current node at right place i.e. left or right. 
@@ -284,8 +328,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 			//the where clause will be added to the queryparser
 		} else {
 			//where clause has already started so the current node will be populated
-			addOnCurrentNode(tempNode);
-			
+			addOnCurrentNode(tempNode);	
 		}
 		tempNode.setType(Node.getAndNodeType());
 		tempNode.setOperator("AND");
@@ -307,6 +350,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		tempNode.setColumn(new parsing.Column(tableColumn.getColumnName(),tableColumn.getTable().getName()));
 		tempNode.setRight(null);
 		tempNode.setLeft(null);
+		tempNode.setTable(new parsing.Table(tableColumn.getTable().getWholeTableName()));
 		addOnCurrentNode(tempNode);
 	}
 
@@ -341,7 +385,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		}
 		tempNode.setType(Node.getBroNodeType());
 		tempNode.setOperator("=");
-		addOnCurrentNode(tempNode);
+		//addOnCurrentNode(tempNode);
 		Node oldNode = currentNode;
 		currentNode = tempNode;
 		visitBinaryExpression(equalsTo);
@@ -367,7 +411,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		}
 		tempNode.setType(Node.getBroNodeType());
 		tempNode.setOperator(">");
-		addOnCurrentNode(tempNode);
+		//addOnCurrentNode(tempNode);
 		Node oldNode = currentNode;
 		currentNode = tempNode;
 		visitBinaryExpression(greaterThan);
@@ -389,7 +433,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		}
 		tempNode.setType(Node.getBroNodeType());
 		tempNode.setOperator(">=");
-		addOnCurrentNode(tempNode);
+		//addOnCurrentNode(tempNode);
 		Node oldNode = currentNode;
 		currentNode = tempNode;
 		visitBinaryExpression(greaterThanEquals);
@@ -439,7 +483,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		}
 		tempNode.setType(Node.getBroNodeType());
 		tempNode.setOperator("<");
-		addOnCurrentNode(tempNode);
+		//addOnCurrentNode(tempNode);
 		Node oldNode = currentNode;
 		currentNode = tempNode;
 		visitBinaryExpression(minorThan);
@@ -462,7 +506,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		}
 		tempNode.setType(Node.getBroNodeType());
 		tempNode.setOperator("<=");
-		addOnCurrentNode(tempNode);
+		//addOnCurrentNode(tempNode);
 		Node oldNode = currentNode;
 		currentNode = tempNode;
 		visitBinaryExpression(minorThanEquals);
@@ -497,7 +541,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		}
 		tempNode.setType(Node.getBroNodeType());
 		tempNode.setOperator("/=");
-		addOnCurrentNode(tempNode);
+		//addOnCurrentNode(tempNode);
 		Node oldNode = currentNode;
 		currentNode = tempNode;
 		visitBinaryExpression(notEqualsTo);
@@ -523,7 +567,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		}
 		tempNode.setType(Node.getOrNodeType());
 		tempNode.setOperator("OR");
-		addOnCurrentNode(tempNode);
+		//addOnCurrentNode(tempNode);
 		Node oldNode = currentNode;
 		currentNode = tempNode;
 		visitBinaryExpression(orExpression);
