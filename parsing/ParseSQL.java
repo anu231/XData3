@@ -127,7 +127,7 @@ public class ParseSQL {
 		// TODO Auto-generated method stub
 		//String query = "Select id1 as id,4,count(distinct(a)),'asd' from moodle as m left outer join highland as h,jurassic as h where moodle.id between 2 and 3";
 		//String query = "Select * from (select * from a left outer join b using (id)) x left outer join (select * from c left outer join d using (id)) y using (id)";
-		String query = "select * from a join b using (id) ";
+		String query = "select * from a join b on a.id=b.id";
 		tnf = new TablesNamesFinder();
 		parseQuery(query,"1");
 		//CCJSqlParserManager pm = new CCJSqlParserManager(); 

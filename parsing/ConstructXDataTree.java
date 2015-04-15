@@ -70,7 +70,38 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	public void parseTree(Select stmt){
 		stmt.getSelectBody().accept(this);
 	}
-	pub
+	/*
+	 * Description : displays the QueryParser Tree in form of a pretty print tree with proper indentation
+	 */
+	public void displayTree(){
+		recursiveDispJTN(qp.root,1);
+		//now where clause
+		//debug("where clause :");
+	}
+	/*
+	 * Description recursively displays the jtn
+	 */
+	private void recursiveDispJTN(JoinTreeNode j, int depth){
+		if (j.getLeft()==null && j.getRight()==null){
+			debug(insertSpace(depth)+"Table :"+j.getRelName());
+		}
+		if (j.getLeft()!=null){
+			recursiveDispJTN(j.getLeft(), depth+1);
+		} 
+		debug(insertSpace(depth)+"Join Node On Exp :"+j.getJoinPred().toString());
+		if (j.getRight()!=null){
+			recursiveDispJTN(j.getRight(), depth+1);
+		}
+	}
+	
+	private String insertSpace(int d){
+		String s="";
+		for (int i=0; i<d; i++){
+			s +=" ";
+		}
+		return s;
+	}
+	
 	public List getTableList(Select select) {
 		tables = new ArrayList();
 		select.getSelectBody().accept(this);
@@ -240,12 +271,6 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		} else {
 			qp.allConds.add(whereClause);
 		}
-	}
-	/*
-	 * Description adds the where clause to the current JTN
-	 */
-	private void addWhereClause2JTN(){
-		
 	}
 	
 	public void visit(AndExpression andExpression) {
