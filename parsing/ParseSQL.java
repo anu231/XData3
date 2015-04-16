@@ -38,12 +38,7 @@ public class ParseSQL {
 	 * Description Constructs xdata based tree from JSQL
 	 * @param stmt
 	 */
-	private static void constructXDataTree(Select stmt){
-		/*root = new QueryParser(TableMap.getInstances());
-		//FIXME add the where clause
-		tnf = new TablesNamesFinder();
-		tnf.createTree(root,stmt);*/
-		
+	private static void constructXDataTree(Select stmt){	
 		ConstructXDataTree cxt = new ConstructXDataTree();
 		cxt.parseTree(stmt);
 		cxt.displayTree();
@@ -58,69 +53,7 @@ public class ParseSQL {
 		if (stmt instanceof Select){
 			//get the from list without going into subquery
 			Select selectStatement = (Select) stmt;
-			
-			constructXDataTree(selectStatement);
-			
-			/*PlainSelect ps = (PlainSelect)selectStatement.getSelectBody();
-			tnf.makeLists(selectStatement);
-			List<Join> jL = ps.getJoins();
-			for (int i=0; i<jL.size(); i++){
-				System.out.println("Join List:"+jL.get(i).toString());
-			}
-			List<FromItem> fromList = tnf.getFromList();
-			List<SelectItem> projCols = tnf.getProjectedList();
-			for (Iterator iter = fromList.iterator(); iter.hasNext();) {
-				FromItem fromItem = (FromItem)iter.next();
-				//net.sf.jsqlparser.schema.Table fromItem = (net.sf.jsqlparser.schema.Table)iter.next();
-				System.out.println("From Item:"+fromItem.getClass());
-			}
-			System.out.println("Projected Cols:");
-			for (Iterator<SelectItem> iter = projCols.iterator(); iter.hasNext();) {
-				SelectItem col = iter.next(); 
-				if ( col instanceof AllColumns) {
-					System.out.println("aal columns");
-				} else if (col instanceof SelectExpressionItem){
-					Expression exp = ((SelectExpressionItem) col).getExpression();
-					if (exp instanceof Function){
-						System.out.println("Function :"+((Function) exp).getName());
-						System.out.println(((Function) exp).getParameters().toString());
-					}
-					if (exp instanceof LongValue){
-						System.out.println("Long val:"+((LongValue) exp).getValue());
-					} else if (exp instanceof StringValue){
-						System.out.println("String :"+((StringValue) exp).getValue());
-					}
-
-				} 
-				if (col instanceof BinaryExpression){
-					BinaryExpression bne = (BinaryExpression) col;
-					System.out.println("Binary:"+bne.getStringExpression());
-				}
-
-				//String fromItem = iter.next().toString();
-				//System.out.println(col.toString());
-			}
-			Node root = null;//tnf.getRootNode();
-			while (root.left!=null){
-				System.out.println(root.getName());
-				root = root.getLeft();
-			}
-			/*Expression where = tnf.getWhereClause();
-			System.out.println("where class:"+where.getClass());
-			if (where instanceof OrExpression){
-				BinaryExpression bne = (BinaryExpression) where;
-				System.out.println("Binary:"+bne.getStringExpression());
-				Expression lt = bne.getLeftExpression();
-				System.out.println("left:"+lt.getClass());
-				EqualsTo leftExp = (EqualsTo) lt;
-				Expression lhs = leftExp.getLeftExpression();
-				System.out.println("LHS Class:"+lhs.getClass());
-				
-			} else if (where instanceof Between){
-				//System.out.println("Left class:"+((Between) where).getRightExpression().getClass());
-				//BinaryExpression bne = (BinaryExpression)((BinaryExpression) where).getRightExpression();
-				//System.out.println(bne.getStringExpression());
-			}*/
+			constructXDataTree(selectStatement);			
 		}
 	}
 
@@ -128,40 +61,13 @@ public class ParseSQL {
 		// TODO Auto-generated method stub
 		//String query = "Select id1 as id,4,count(distinct(a)),'asd' from moodle as m left outer join highland as h,jurassic as h where moodle.id between 2 and 3";
 		//String query = "Select * from (select * from a left outer join b using (id)) x left outer join (select * from c left outer join d using (id)) y using (id)";
-		String query = "Select * from (select * from a left outer join b on a.id=b.id) x left outer join (select * from c left outer join d on c.id=d.id) y on x.id=y.id";
+		//String query = "Select * from (select * from a left outer join b on a.id=b.id) x left outer join (select * from c left outer join d on c.id=d.id) y on x.id=y.id";
 		//String query ="SELECT distinct dept_name FROM course WHERE credits IN (SELECT SUM(credits) FROM course NATURAL JOIN department WHERE  title='CS' GROUP BY dept_name, building HAVING COUNT(course_id)> 2)";
+		String query="SELECT t.semester, SUM(c.credits) FROM (select dep,budget,dept_name from department where valid=1 ) as d INNER JOIN teaches t  ON (d.budget = t.year + 4)  INNER JOIN course c ON (c.dept_name = d.dept_name)  GROUP BY t.semester HAVING AVG(c.credits) > 2 AND COUNT(d.building) = 2";
 		//String query = "select * from a join b on a.id=b.id";
-		//tnf = new TablesNamesFinder();
+		
 		parseQuery(query,"1");
 		
-		//CCJSqlParserManager pm = new CCJSqlParserManager(); 
-		//Statement stmt = pm.parse(new StringReader(query));
-		/*if (stmt instanceof Select) {
-			Select selectStatement = (Select) stmt;
-			PlainSelect ps = (PlainSelect)selectStatement.getSelectBody();
-			List<SelectItem> l = ps.getSelectItems();
-			//for ()
-			System.out.println("from item :"+ps.getFromItem().toString());
-			List<Join> j = ps.getJoins();
-			System.out.println("right itms:");
-			for (int i=0; i<j.size(); i++){
-				Join temp = (Join)j.get(i);
-				System.out.println(temp.getRightItem());
 			}
-
-			TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
-			List tableList = tablesNamesFinder.getTableList(selectStatement);
-			for (Iterator iter = tableList.iterator(); iter.hasNext();) {
-				String tableName = iter.next().toString();
-				System.out.println(tableName);
-			}
-			List tableAliasList = tablesNamesFinder.getTableAlias(selectStatement);
-			for (Iterator iter = tableAliasList.iterator(); iter.hasNext();) {
-				String tableName = iter.next().toString();
-				System.out.println(tableName);
-			}
-		}*/
-
-	}
 
 }
