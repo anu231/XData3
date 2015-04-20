@@ -38,9 +38,9 @@ public class ParseSQL {
 	 * Description Constructs xdata based tree from JSQL
 	 * @param stmt
 	 */
-	private static void constructXDataTree(Select stmt){	
+	private static void constructXDataTree(Select stmt,String q,String qid){	
 		ConstructXDataTree cxt = new ConstructXDataTree();
-		cxt.parseTree(stmt);
+		cxt.parseTree(stmt,q,qid);
 		cxt.displayTree();
 	}
 
@@ -53,7 +53,7 @@ public class ParseSQL {
 		if (stmt instanceof Select){
 			//get the from list without going into subquery
 			Select selectStatement = (Select) stmt;
-			constructXDataTree(selectStatement);			
+			constructXDataTree(selectStatement,q,qid);			
 		}
 	}
 
@@ -63,9 +63,10 @@ public class ParseSQL {
 		//String query = "Select * from (select * from a left outer join b using (id)) x left outer join (select * from c left outer join d using (id)) y using (id)";
 		//String query = "Select * from (select * from a left outer join b on a.id=b.id) x left outer join (select * from c left outer join d on c.id=d.id) y on x.id=y.id";
 		//String query ="SELECT distinct dept_name FROM course WHERE credits IN (SELECT SUM(credits) FROM course NATURAL JOIN department WHERE  title='CS' GROUP BY dept_name, building HAVING COUNT(course_id)> 2)";
-		String query="SELECT t.semester, SUM(c.credits) FROM (select dep,budget,dept_name from department where valid=1 ) as d INNER JOIN teaches t  ON (d.budget = t.year + 4)  INNER JOIN course c ON (c.dept_name = d.dept_name)  GROUP BY t.semester HAVING AVG(c.credits) > 2 AND COUNT(d.building) = 2";
+		//String query="SELECT t.semester, SUM(c.credits) FROM (select dep,budget,dept_name from department where valid=1 ) as d INNER JOIN teaches t  ON (d.budget = t.year + 4)  INNER JOIN course c ON (c.dept_name = d.dept_name)  GROUP BY t.semester HAVING AVG(c.credits) > 2 AND COUNT(d.building) = 2";
 		//String query = "select * from a join b on a.id=b.id";
-		
+		//String query="SELECT c.dept_name, SUM(c.credits) FROM course c INNER JOIN department d ON (c.dept_name = d.dept_name)  GROUP BY c.dept_name  HAVING SUM(c.credits) > 10 AND COUNT(c.credits) > 1";
+		String query="SELECT count(c.der) as d FROM course c INNER JOIN department d ON (c.dept_name = d.dept_name)  GROUP BY c.dept_name  HAVING SUM(c.credits) > 10 AND COUNT(c.credits) > 1";
 		parseQuery(query,"1");
 		
 			}

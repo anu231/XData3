@@ -168,7 +168,7 @@ public class ProcessResultSetNode {
 		}
 
 		qParser.queryAliases.setTabs(t);
-
+					
 
 		// Geting SelectionClause and JoinClause equalities
 		ValueNode whereClause = ((SelectNode) rsNode).getWhereClause();

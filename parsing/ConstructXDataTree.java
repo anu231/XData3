@@ -3,6 +3,7 @@ package parsing;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import util.TableMap;
 import net.sf.jsqlparser.expression.AllComparisonExpression;
@@ -45,17 +46,25 @@ import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.select.*;
 
-public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinVisitor, ExpressionVisitor, ItemsListVisitor {
+public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinVisitor, ExpressionVisitor, ItemsListVisitor, SelectItemVisitor {
 	private List tables;
 	private QueryParser qp;
+	private QueryParser origQP;
 	private JoinTreeNode currentRoot;
 	private Node whereClause;
 	private boolean whereClauseParseStart = false;
+	private boolean fromClauseSubQuery = false;
+	private boolean whereClauseSubQuery = false;
 	private boolean output = true;
 	private Node currentNode;
 	private boolean nextNodeLeft = true;
 	private boolean joinWhere = false;
 	private boolean visitRightJoinElem = false;
+	private boolean subQparse = false;
+	Vector<FromListElement> t = new Vector<FromListElement>();
+	private boolean visitingProj = false;
+	private Vector<Node> projectedCols;
+	private Node currProjNode;
 	
 	private void debug(String s){
 		if (output){
@@ -68,7 +77,9 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		qp = new QueryParser(null);
 	}
 	
-	public void parseTree(Select stmt){
+	public void parseTree(Select stmt,String q,String qid){
+		Query qObj = new Query(qid,q);
+		qp.setQuery(qObj);
 		stmt.getSelectBody().accept(this);
 	}
 	/*
@@ -157,7 +168,17 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 				debug("ERROR in adding PlainSelect to tree. No spcae.");
 			}
 		}
-		
+		/*
+		 * Parsing the projected cols
+		 */
+		List<SelectItem> projList = plainSelect.getSelectItems();
+		visitingProj = true;
+		projectedCols = new Vector<Node>();
+		for (int i=0; i<projList.size(); i++){
+			SelectItem temp = (SelectItem)projList.get(i);
+			temp.accept(this);
+		}
+		visitingProj = false;
 		Boolean firstJoin = true;
 		JoinTreeNode prevElem = null;
 		JoinTreeNode parentJTN = null;
@@ -189,6 +210,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 					whereClauseParseStart = true;
 					joinWhere = true;
 					join.getOnExpression().accept(this);
+					
 					addWhereClause();
 				} catch(Exception e){
 					debug("Exception1 :"+e.toString());
@@ -209,6 +231,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 			debug("where clause :"+plainSelect.getWhere().toString());
 			debug("where class:"+plainSelect.getWhere().getClass());
 			plainSelect.getWhere().accept(this);
+			whereClauseParseStart = false;
 			addWhereClause();
 		} else {
 			debug("no where");
@@ -253,24 +276,68 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		
 		//FIXME where to add this jtn to
 		addOnCurrentJTN(jtn);
+		
+		/*
+		 * Create FromListElement
+		 */
+		String tName = tableName.getName();
+		FromListElement temp = new FromListElement();
+		temp.setAliasName(tableName.getAlias());
+		temp.setTableName(tName);
+		String tableNameNo = tableName.getName()+ qp.getQuery().getRepeatedRelationCount().get(tName);
+		temp.setTableNameNo(tableNameNo);
+		temp.setTabs(null);
+		
+		//Util.updateTableOccurrences(isFromSubQuery, isWhereSubQuery, tableNameNo, qParser);
+		
+		if (qp.getQuery().getCurrentIndex().get(tName) == null)
+			qp.getQuery().putCurrentIndex(tName, 0);
+		t.addElement(temp);
 	}
 
 	public void visit(SubSelect subSelect) {
 		//subquery
-		JoinTreeNode jtn = new JoinTreeNode();
+		
+		/*JoinTreeNode jtn = new JoinTreeNode();
 		JoinTreeNode oldRoot = currentRoot;
 		if (currentRoot.getLeft()==null){
 			currentRoot.setLeft(jtn);
 		} else if (currentRoot.getRight()==null){
 			currentRoot.setRight(jtn);
 		} else {
-			//FIXME
 			debug("No place to add subselect");
 		}
 		currentRoot = jtn;
 		jtn.setNodeAlias(subSelect.getAlias());
 		subSelect.getSelectBody().accept(this);
 		currentRoot = oldRoot;
+		*/
+		/*
+		 * Adding it as another query parser instance
+		 */
+		if (whereClauseParseStart){
+			whereClauseSubQuery = true;
+		}
+		parsing.QueryParser subQClause=new parsing.QueryParser(null);
+		subQClause.setQuery(new Query("1",subSelect.toString()));
+		String aliasName = subSelect.getAlias();
+		subQClause.queryAliases=new FromListElement();
+		subQClause.queryAliases.setAliasName(subSelect.getAlias());
+		subQClause.queryAliases.setTableName(null);
+		
+		if(fromClauseSubQuery){
+			qp.getFromClauseSubqueries().add(subQClause);
+			qp.getSubQueryNames().put(aliasName, qp.getFromClauseSubqueries().size()-1);
+		}
+		if(whereClauseSubQuery){
+			qp.getWhereClauseSubqueries().add(subQClause);
+		}
+		subQparse = true;
+		origQP = qp;
+		qp = subQClause;
+		subSelect.getSelectBody().accept(this);
+		subQparse = false;
+		qp = origQP;
 	}
 
 	public void visit(Addition addition) {
@@ -325,6 +392,10 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		}
 	}
 	
+	/*public void visit(SelectItem selectItem){
+		
+	}*/
+	
 	public void visit(AndExpression andExpression) {
 		//create an and node
 		Node tempNode = new Node();
@@ -375,6 +446,10 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	}
 
 	public void visit(DoubleValue doubleValue) {
+		Node tempNode = new Node();
+		tempNode.setType(Node.getValType());
+		tempNode.setStrConst(doubleValue.toString());
+		addOnCurrentNode(tempNode);
 	}
 
 	public void visit(EqualsTo equalsTo) {
@@ -401,6 +476,7 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	}
 
 	public void visit(Function function) {
+		debug("Function:"+function.toString());
 	}
 
 	public void visit(GreaterThan greaterThan) {
@@ -415,7 +491,6 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 		} else {
 			//where clause has already started so the current node will be populated
 			addOnCurrentNode(tempNode);
-			
 		}
 		tempNode.setType(Node.getBroNodeType());
 		tempNode.setOperator(">");
@@ -472,7 +547,10 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	}
 
 	public void visit(LongValue longValue) {
-		debug("long val:"+longValue.toString());
+		Node tempNode = new Node();
+		tempNode.setType(Node.getValType());
+		tempNode.setStrConst(longValue.toString());
+		addOnCurrentNode(tempNode);
 	}
 
 	public void visit(MinorThan minorThan) {
@@ -671,6 +749,35 @@ public class ConstructXDataTree implements SelectVisitor, FromItemVisitor, JoinV
 	public void visit(BitwiseXor arg0) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void visit(AllColumns arg0) {
+		// TODO Auto-generated method stub
+		/*
+		 * all colimns as in *
+		 */
+		projectedCols.addAll(Util.addAllProjectedColumns(qp.queryAliases,0,qp));
+		debug("allcolumns :"+arg0.toString());
+	}
+
+	@Override
+	public void visit(AllTableColumns arg0) {
+		// TODO Auto-generated method stub
+		//FIXME when does this get called
+		debug("alltablecolumns :"+arg0.toString());
+	}
+
+	@Override
+	public void visit(SelectExpressionItem selectExpItem) {
+		// TODO Auto-generated method stub
+		Node oldNode = currentNode;
+		currentNode = null;
+		//tempNode.setTableAlias(selectExpItem.getAlias());
+		selectExpItem.getExpression().accept(this);
+		projectedCols.add(tempNode);
+		currentNode = oldNode;
+		debug("selectexpitem :"+selectExpItem.toString());
 	}
 
 }
