@@ -575,24 +575,31 @@ public class QueryParser {
 	}
 
 	public void parseQuery(String queryId, String queryString) throws Exception {
-		parseQuery(queryId, queryString, true);
+		//parseQuery(queryId, queryString, true);
+		parseQueryJSQL(queryId, queryString, true);
 	}
 	
-	public void parseQueryJSQL(String queryId, String queryString, boolean debug)throws Exception{
+	
+	public void parseQueryJSQL(String queryId, String queryString, boolean debug) throws Exception{
 		System.out.println("queryString" + queryString);
 		queryString=queryString.trim().replaceAll("\n+", " ");
 		queryString=queryString.trim().replaceAll(" +", " ");		
+		if(queryString.toLowerCase().contains("year")){
+			queryString=queryString.replaceAll("year","year1");
+			queryString=queryString.replaceAll("Year","year1");
+			queryString=queryString.replaceAll("YEAR","year1");
+		}
 		queryString=preParseQuery(queryId,queryString);		
 		this.query = new Query(queryId, queryString);
 		
-		CCJSqlParserManager pm = new CCJSqlParserManager();
-		Statement stmt = pm.parse(new StringReader(query.getQueryString()));
-		
-		if (stmt instanceof Select){
-			//vary simple query
-			ProcessResultSetNode.processResultSetNodeJSQL(stmt, debug, this);
-		}
-		
+		query.setQueryString(queryString);
+
+		BufferedWriter stdout = new BufferedWriter(new OutputStreamWriter(System.out));
+		//System.out.println("Original query :"+queryString);
+		//queryString = generateCleanQry(queryString, "", "");		
+		System.out.println("Cleaned query:"+queryString);
+		ParseSQL.parseQuery(queryString, "1", this);
+		//var i=0;
 	}
 	
 	public void parseQuery(String queryId, String queryString, boolean debug)

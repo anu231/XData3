@@ -4,9 +4,15 @@ import generateConstraints.GetCVC3HeaderAndFooter;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.StringReader;
 
+import net.sf.jsqlparser.parser.CCJSqlParserManager;
+import net.sf.jsqlparser.statement.select.Select;
+import parsing.ParseSQL;
+import parsing.Query;
 import parsing.QueryParser;
 import util.Configuration;
+import util.TableMap;
 
 /**
  * This class contains functions to do pre processing actions before actual data generation is done
@@ -30,12 +36,18 @@ public class PreProcessingActivity {
 			/**Read the input query */
 			while (( queryString = input.readLine()) != null){
 
-
+				/****************************/
+				//using JSQLPARSER
+				QueryParser q = new QueryParser(TableMap.getInstances());
+				ParseSQL.parseQuery(queryString, "1",q);
+				cvc.setqParser(ParseSQL.cxt.origQP);
+				/****************************/
+				
 				/**Create a new query parser*/
-				cvc.setqParser( new QueryParser(cvc.getTableMap()));
+				//cvc.setqParser( new QueryParser(cvc.getTableMap()));
 
 				/** Parse the query */
-				cvc.getqParser().parseQuery("q1", queryString);
+				//cvc.getqParser().parseQuery("q1", queryString);
 
 				/**Initialize the query details to the object*/
 				cvc.initializeQueryDetails(cvc.getqParser() );

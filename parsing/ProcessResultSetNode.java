@@ -162,7 +162,6 @@ public class ProcessResultSetNode {
 				t.add(temp);
 			} else if (fromTableList.get(j) instanceof FromSubquery) {
 				FromListElement temp =	OperateOnSubQuery.OperateOnSubquery((FromSubquery) fromTableList.get(j),qParser.allConds, qParser.root,true,false,qParser);
-
 				t.add(temp);
 			}
 		}
